@@ -231,13 +231,8 @@ class WorkerPool {
     const blob = new Blob([
       `
         self.onmessage = function(e) {
-          function t(str) {
-            var startIndex = str.indexOf('{');
-            return str.slice(startIndex + 1, str.length - 1);
-          }
-          var body = t(e.data.run);
-          var f = new Function('data', body);
-          f(e.data.args).then(r => {
+          var f = eval('(function(){ return ' + e.data.run + ' })()');
+          f.apply(null, e.data.args).then(r => {
             self.postMessage(r);
           })
         }
